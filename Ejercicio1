@@ -1,0 +1,55 @@
+<?php
+
+declare(strict_types=1);
+
+class Points {
+    const MIN = 1;
+    const MAX = 100;
+
+    private $a;
+    private $b;
+    private $error;
+    private $points = [0,0];
+
+    public function __construct($a, $b)
+    {
+        $this->a = $a;
+        $this->b = $b;
+    }
+
+    public function counPoints(): int
+    {
+        $count = 0;
+        array_walk($this->a, array($this, 'validate'));
+
+        if ($this->error) {
+            return "Error in validate value: " . $this->error;
+        }else{
+            if (sizeof($this->a) <= sizeof($this->b)) $count = sizeof($this->a); else $count = sizeof($this->b);
+            for ($i = 0; $i < $count; $i++) {
+                if ($this->a[$i] > $this->b[$i]) {
+                    $this->points[0] += 1;
+                } elseif ($this->b[$i] > $this->a[$i]) {
+                    $this->points[1] += 1;
+                }
+            }
+            return $this->points;
+        }
+    }
+
+    private function validate($element, $key)
+    {
+        if (self::MIN >= $element || $element >= self::MAX){
+            $this->error = $element;
+        }
+    }
+}
+
+
+$alice = [17,28,30];
+$bob = [99,16,8];
+
+$points = new Points($alice, $bob);
+$result = $points->counPoints();
+
+var_dump($result);
