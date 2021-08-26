@@ -1,0 +1,53 @@
+<?php
+
+declare(strict_types=1);
+
+class Strings
+{
+    private $string;
+    private $words;
+    private $counts = [];
+
+    public function __construct($string)
+    {
+        $this->string = $this->clear($string);
+        $this->words = str_word_count($this->string, 2);
+    }
+
+    public function countWords(): string
+    {
+        array_walk($this->words, array($this, 'processWords'));
+
+        return json_encode($this->counts);
+    }
+
+    private function processWords($element, $key)
+    {
+        $this->counts[$element] = substr_count($this->string, $element);
+    }
+
+    private function clear($string): string
+    {
+        $search = explode(",","á,é,í,ó,ú,ñ,Á,É,Í,Ó,Ú,Ñ,");
+        $replace = explode(",","a,e,i,o,u,n,A,E,I,O,U,N,");
+
+        return str_replace($search, $replace, $string);
+    }
+}
+
+
+$string = "Érase una vez una niñita que lucía una hermosa capa
+de color rojo. Como la niña la usaba muy a menudo, todos la
+llamaban Caperucita Roja. Un día, la mamá de Caperucita Roja la
+llamó y le dijo: —Abuelita no se siente muy bien, he horneado
+unas galletitas y quiero que tú se las lleves. —Claro que sí
+—respondió Caperucita Roja, poniéndose su capa y llenando su
+canasta de galletas recién horneadas. Antes de salir, su mamá
+le dijo: — Escúchame muy bien, quédate en el camino y nunca
+hables con extraños. —Yo sé mamá —respondió Caperucita Roja y
+salió inmediatamente hacia la casa de la abuelita.";
+
+$strings = new Strings($string);
+$result = $strings->countWords();
+
+var_dump($result);
